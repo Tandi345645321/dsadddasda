@@ -1,0 +1,3317 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BeatForge Pro - Полнофункциональная DAW</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* Основные стили */
+        :root {
+            --primary: #ff7b00;
+            --primary-dark: #e56d00;
+            --primary-light: #ff9d40;
+            --bg-dark: #121212;
+            --bg-panel: #1e1e1e;
+            --bg-darker: #0a0a0a;
+            --bg-hover: #2a2a2a;
+            --text: #e0e0e0;
+            --text-dim: #aaaaaa;
+            --text-bright: #ffffff;
+            --border: #333333;
+            --success: #4caf50;
+            --danger: #f44336;
+            --warning: #ff9800;
+            --info: #2196f3;
+            --radius: 8px;
+            --shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+            --transition: all 0.3s ease;
+        }
+
+        /* Светлая тема */
+        .light-theme {
+            --primary: #ff7b00;
+            --primary-dark: #e56d00;
+            --primary-light: #ff9d40;
+            --bg-dark: #f5f5f5;
+            --bg-panel: #ffffff;
+            --bg-darker: #e0e0e0;
+            --bg-hover: #f0f0f0;
+            --text: #333333;
+            --text-dim: #666666;
+            --text-bright: #000000;
+            --border: #dddddd;
+            --success: #4caf50;
+            --danger: #f44336;
+            --warning: #ff9800;
+            --info: #2196f3;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, var(--bg-dark) 0%, #1a1a2e 100%);
+            color: var(--text);
+            overflow: hidden;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            transition: var(--transition);
+        }
+
+        body.light-theme {
+            background: linear-gradient(135deg, var(--bg-dark) 0%, #d5d5e5 100%);
+        }
+
+        /* Главное меню */
+        .main-menu {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(10, 10, 10, 0.95);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            transition: var(--transition);
+        }
+
+        .light-theme .main-menu {
+            background: rgba(245, 245, 245, 0.95);
+        }
+
+        .main-menu.hidden {
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .logo {
+            font-size: 48px;
+            font-weight: 800;
+            margin-bottom: 30px;
+            background: linear-gradient(45deg, var(--primary), var(--primary-light));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 0 0 20px rgba(255, 123, 0, 0.3);
+        }
+
+        .menu-buttons {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            width: 300px;
+        }
+
+        .menu-btn {
+            background: linear-gradient(45deg, var(--primary), var(--primary-dark));
+            color: white;
+            border: none;
+            padding: 15px 20px;
+            border-radius: var(--radius);
+            font-size: 18px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            box-shadow: var(--shadow);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .menu-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 15px rgba(255, 123, 0, 0.4);
+        }
+
+        .menu-btn:active {
+            transform: translateY(1px);
+        }
+
+        .menu-btn.secondary {
+            background: var(--bg-panel);
+            color: var(--text);
+        }
+
+        /* Панель управления */
+        .control-panel {
+            background: var(--bg-panel);
+            padding: 12px 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-bottom: 1px solid var(--border);
+            box-shadow: var(--shadow);
+            z-index: 10;
+        }
+
+        .transport-controls {
+            display: flex;
+            gap: 10px;
+        }
+
+        .bpm-control {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: var(--bg-darker);
+            padding: 8px 15px;
+            border-radius: var(--radius);
+        }
+
+        .bpm-value {
+            font-weight: bold;
+            font-size: 18px;
+            min-width: 40px;
+            text-align: center;
+            color: var(--primary);
+        }
+
+        /* Кнопки */
+        .btn {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 10px 18px;
+            border-radius: var(--radius);
+            cursor: pointer;
+            transition: var(--transition);
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            box-shadow: var(--shadow);
+        }
+
+        .btn:hover {
+            background: var(--primary-dark);
+            transform: translateY(-2px);
+        }
+
+        .btn:active {
+            transform: translateY(1px);
+        }
+
+        .btn-play {
+            background: var(--success);
+        }
+
+        .btn-stop {
+            background: var(--danger);
+        }
+
+        .btn-secondary {
+            background: var(--bg-darker);
+            color: var(--text);
+        }
+
+        .btn-small {
+            padding: 6px 12px;
+            font-size: 14px;
+        }
+
+        /* Визуализатор волны */
+        .wave-visualizer {
+            height: 80px;
+            background: linear-gradient(to bottom, var(--bg-darker), var(--bg-panel));
+            position: relative;
+            overflow: hidden;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .wave-canvas {
+            width: 100%;
+            height: 100%;
+        }
+
+        /* Основная рабочая область */
+        .work-area {
+            display: flex;
+            flex: 1;
+            overflow: hidden;
+        }
+
+        /* Степ-секвенсор */
+        .step-sequencer {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            padding: 20px;
+            border-right: 1px solid var(--border);
+            background: var(--bg-panel);
+            overflow: auto;
+        }
+
+        .sequencer-header {
+            display: flex;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .instrument-label {
+            width: 120px;
+            font-weight: bold;
+            color: var(--text-dim);
+            padding: 5px;
+            text-transform: uppercase;
+            font-size: 12px;
+            letter-spacing: 1px;
+        }
+
+        .steps-container {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            flex: 1;
+        }
+
+        .step-row {
+            display: flex;
+            align-items: center;
+            transition: var(--transition);
+        }
+
+        .step-row:hover {
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: var(--radius);
+        }
+
+        .light-theme .step-row:hover {
+            background: rgba(0, 0, 0, 0.03);
+        }
+
+        .step-label {
+            width: 120px;
+            font-weight: bold;
+            padding: 10px;
+            text-transform: uppercase;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .step-label i {
+            color: var(--primary);
+        }
+
+        .steps {
+            display: flex;
+            gap: 5px;
+            flex: 1;
+        }
+
+        .step {
+            flex: 1;
+            height: 45px;
+            background: var(--bg-darker);
+            border: 1px solid var(--border);
+            border-radius: 4px;
+            cursor: pointer;
+            transition: var(--transition);
+            position: relative;
+        }
+
+        .step:hover {
+            background: var(--bg-hover);
+        }
+
+        .step.active {
+            background: var(--primary);
+            box-shadow: 0 0 10px var(--primary);
+        }
+
+        .step.current {
+            box-shadow: inset 0 0 0 3px white;
+        }
+
+        .step.velocity-high {
+            opacity: 1;
+        }
+
+        .step.velocity-medium {
+            opacity: 0.7;
+        }
+
+        .step.velocity-low {
+            opacity: 0.4;
+        }
+
+        /* Драм-пады */
+        .drum-pads {
+            width: 320px;
+            padding: 20px;
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            border-right: 1px solid var(--border);
+            background: var(--bg-panel);
+            overflow: auto;
+        }
+
+        .drum-pad {
+            aspect-ratio: 1;
+            background: var(--bg-darker);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: var(--transition);
+            position: relative;
+            overflow: hidden;
+            box-shadow: var(--shadow);
+        }
+
+        .drum-pad:hover {
+            background: var(--bg-hover);
+            transform: translateY(-3px);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.4);
+        }
+
+        .drum-pad:active {
+            transform: translateY(1px);
+        }
+
+        .drum-pad.active {
+            background: var(--primary);
+            box-shadow: 0 0 20px var(--primary);
+            transform: scale(0.95);
+        }
+
+        .pad-name {
+            font-weight: bold;
+            font-size: 16px;
+            margin-bottom: 8px;
+        }
+
+        .pad-key {
+            font-size: 12px;
+            color: var(--text-dim);
+            background-color: rgba(0,0,0,0.5);
+            padding: 3px 8px;
+            border-radius: 4px;
+        }
+
+        /* Нижнее меню */
+        .bottom-menu {
+            display: flex;
+            background: var(--bg-panel);
+            border-top: 1px solid var(--border);
+            height: 60px;
+            box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.2);
+        }
+
+        .menu-item {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: var(--transition);
+            font-weight: 500;
+            border-right: 1px solid var(--border);
+            flex-direction: column;
+            gap: 5px;
+            font-size: 12px;
+        }
+
+        .menu-item:last-child {
+            border-right: none;
+        }
+
+        .menu-item:hover {
+            background: var(--bg-hover);
+        }
+
+        .menu-item.active {
+            background: var(--primary);
+            color: white;
+        }
+
+        .menu-item i {
+            font-size: 18px;
+        }
+
+        /* Панели */
+        .panel {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 60px;
+            background: var(--bg-dark);
+            display: none;
+            flex-direction: column;
+            z-index: 5;
+            padding: 20px;
+            overflow: auto;
+        }
+
+        .panel.active {
+            display: flex;
+        }
+
+        .panel-header {
+            padding: 15px 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid var(--border);
+            margin-bottom: 20px;
+        }
+
+        /* Пианино-ролл */
+        .piano-roll-content {
+            flex: 1;
+            display: flex;
+            overflow: hidden;
+            background: var(--bg-darker);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+        }
+
+        .piano-keys {
+            width: 70px;
+            background: var(--bg-panel);
+            border-right: 1px solid var(--border);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .piano-key {
+            height: 30px;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            cursor: pointer;
+            transition: var(--transition);
+            font-size: 12px;
+        }
+
+        .piano-key:hover {
+            background: var(--bg-hover);
+        }
+
+        .piano-key.white {
+            background-color: var(--bg-panel);
+            color: var(--text);
+        }
+
+        .light-theme .piano-key.white {
+            background-color: white;
+            color: black;
+        }
+
+        .piano-key.black {
+            background-color: var(--bg-darker);
+            color: var(--text);
+            height: 20px;
+            margin-top: -10px;
+            z-index: 1;
+            width: 45px;
+            margin-left: auto;
+        }
+
+        .light-theme .piano-key.black {
+            background-color: black;
+            color: white;
+        }
+
+        .piano-key.active {
+            background: var(--primary);
+        }
+
+        .piano-grid {
+            flex: 1;
+            position: relative;
+            overflow: auto;
+        }
+
+        .grid-container {
+            position: relative;
+            width: 100%;
+            height: 100%;
+        }
+
+        .grid-background {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-size: 40px 30px;
+            background-image: 
+                linear-gradient(to right, rgba(255,255,255,0.05) 1px, transparent 1px),
+                linear-gradient(to bottom, rgba(255,255,255,0.05) 1px, transparent 1px);
+        }
+
+        .light-theme .grid-background {
+            background-image: 
+                linear-gradient(to right, rgba(0,0,0,0.05) 1px, transparent 1px),
+                linear-gradient(to bottom, rgba(0,0,0,0.05) 1px, transparent 1px);
+        }
+
+        .grid-notes {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+        }
+
+        .note {
+            position: absolute;
+            background: var(--primary);
+            border-radius: 4px;
+            cursor: pointer;
+            transition: var(--transition);
+            box-shadow: var(--shadow);
+        }
+
+        .note:hover {
+            opacity: 0.8;
+            transform: scale(1.05);
+        }
+
+        /* Микшер */
+        .mixer-content {
+            flex: 1;
+            display: flex;
+            gap: 20px;
+            overflow-x: auto;
+            padding: 10px;
+        }
+
+        .mixer-channel {
+            width: 90px;
+            background: var(--bg-panel);
+            border-radius: var(--radius);
+            padding: 15px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 15px;
+            box-shadow: var(--shadow);
+            transition: var(--transition);
+        }
+
+        .mixer-channel:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        .channel-name {
+            font-weight: bold;
+            font-size: 14px;
+            text-align: center;
+        }
+
+        .channel-fader {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+            width: 100%;
+        }
+
+        .fader-track {
+            width: 25px;
+            height: 180px;
+            background: var(--bg-darker);
+            border-radius: 12px;
+            position: relative;
+            cursor: pointer;
+            box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.5);
+        }
+
+        .fader-knob {
+            width: 35px;
+            height: 12px;
+            background: var(--primary);
+            border-radius: 6px;
+            position: absolute;
+            left: -5px;
+            cursor: pointer;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+        }
+
+        .channel-controls {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            width: 100%;
+        }
+
+        .knob {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: var(--bg-darker);
+            position: relative;
+            cursor: pointer;
+            margin: 0 auto;
+            box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.5);
+        }
+
+        .knob-marker {
+            position: absolute;
+            width: 3px;
+            height: 20px;
+            background: var(--primary);
+            top: 5px;
+            left: 50%;
+            transform: translateX(-50%);
+            transform-origin: bottom center;
+        }
+
+        .effect-list {
+            width: 100%;
+            margin-top: 10px;
+        }
+
+        .effect-item {
+            background: var(--bg-darker);
+            padding: 8px;
+            border-radius: 4px;
+            margin-bottom: 5px;
+            font-size: 12px;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .effect-item:hover {
+            background: var(--primary);
+        }
+
+        /* Библиотека */
+        .library-content {
+            flex: 1;
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+            gap: 20px;
+            overflow-y: auto;
+            padding: 10px;
+        }
+
+        .sample-item {
+            background: var(--bg-panel);
+            border-radius: var(--radius);
+            padding: 15px;
+            cursor: pointer;
+            transition: var(--transition);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+            box-shadow: var(--shadow);
+        }
+
+        .sample-item:hover {
+            background: var(--primary);
+            transform: translateY(-5px);
+            box-shadow: 0 8px 15px rgba(255, 123, 0, 0.3);
+        }
+
+        .sample-icon {
+            width: 70px;
+            height: 70px;
+            background: var(--bg-darker);
+            border-radius: var(--radius);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 28px;
+        }
+
+        .sample-name {
+            font-weight: bold;
+            text-align: center;
+            font-size: 16px;
+        }
+
+        .sample-type {
+            color: var(--text-dim);
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        /* Обучение */
+        .learn-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            overflow-y: auto;
+            padding: 10px;
+        }
+
+        .lesson {
+            background: var(--bg-panel);
+            border-radius: var(--radius);
+            padding: 25px;
+            cursor: pointer;
+            transition: var(--transition);
+            box-shadow: var(--shadow);
+        }
+
+        .lesson:hover {
+            background: var(--primary);
+            transform: translateY(-5px);
+            box-shadow: 0 8px 15px rgba(255, 123, 0, 0.3);
+        }
+
+        .lesson-title {
+            font-size: 20px;
+            font-weight: bold;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .lesson-desc {
+            color: var(--text-dim);
+            line-height: 1.5;
+        }
+
+        /* Анализатор аудио */
+        .audio-analyzer {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .upload-area {
+            border: 2px dashed var(--border);
+            border-radius: var(--radius);
+            padding: 40px;
+            text-align: center;
+            cursor: pointer;
+            transition: var(--transition);
+            background: var(--bg-panel);
+        }
+
+        .upload-area:hover {
+            border-color: var(--primary);
+            background: var(--bg-hover);
+        }
+
+        .upload-area i {
+            font-size: 48px;
+            color: var(--primary);
+            margin-bottom: 15px;
+        }
+
+        .upload-area h3 {
+            margin-bottom: 10px;
+        }
+
+        .upload-area p {
+            color: var(--text-dim);
+            margin-bottom: 20px;
+        }
+
+        .analyzer-visualization {
+            height: 200px;
+            background: var(--bg-darker);
+            border-radius: var(--radius);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .analyzer-canvas {
+            width: 100%;
+            height: 100%;
+        }
+
+        /* Freshtunes панель */
+        .freshtunes-panel {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .freshtunes-login {
+            background: var(--bg-panel);
+            border-radius: var(--radius);
+            padding: 30px;
+            box-shadow: var(--shadow);
+        }
+
+        .login-form {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        .form-group label {
+            font-weight: 500;
+        }
+
+        .form-group input {
+            padding: 12px;
+            border-radius: var(--radius);
+            border: 1px solid var(--border);
+            background: var(--bg-darker);
+            color: var(--text);
+            font-size: 16px;
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
+
+        .freshtunes-dashboard {
+            background: var(--bg-panel);
+            border-radius: var(--radius);
+            padding: 30px;
+            box-shadow: var(--shadow);
+            display: none;
+        }
+
+        .dashboard-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: var(--primary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+        }
+
+        .track-upload {
+            margin-top: 20px;
+        }
+
+        .track-info {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .track-cover {
+            width: 100px;
+            height: 100px;
+            background: var(--bg-darker);
+            border-radius: var(--radius);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+        }
+
+        .track-details {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        /* Анимации */
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+
+        .pulse {
+            animation: pulse 0.5s ease;
+        }
+
+        @keyframes wave {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(100%); }
+        }
+
+        .wave-animation {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,123,0,0.3), transparent);
+            animation: wave 2s linear infinite;
+            display: none;
+        }
+
+        /* Слайдеры */
+        input[type="range"] {
+            -webkit-appearance: none;
+            width: 100%;
+            height: 6px;
+            background: var(--bg-darker);
+            border-radius: 5px;
+            outline: none;
+        }
+
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 18px;
+            height: 18px;
+            background: var(--primary);
+            border-radius: 50%;
+            cursor: pointer;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+        }
+
+        /* Переключатель темы */
+        .theme-toggle {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 100;
+        }
+
+        .theme-btn {
+            background: var(--bg-panel);
+            border: 1px solid var(--border);
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: var(--transition);
+            box-shadow: var(--shadow);
+        }
+
+        .theme-btn:hover {
+            transform: rotate(30deg);
+        }
+
+        /* Утилиты */
+        .hidden {
+            display: none !important;
+        }
+
+        .text-center {
+            text-align: center;
+        }
+
+        .mt-10 {
+            margin-top: 10px;
+        }
+
+        .mb-10 {
+            margin-bottom: 10px;
+        }
+
+        .flex {
+            display: flex;
+        }
+
+        .flex-1 {
+            flex: 1;
+        }
+
+        /* Модальные окна */
+        .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 100;
+            opacity: 0;
+            pointer-events: none;
+            transition: var(--transition);
+        }
+
+        .light-theme .modal {
+            background: rgba(0, 0, 0, 0.5);
+        }
+
+        .modal.active {
+            opacity: 1;
+            pointer-events: all;
+        }
+
+        .modal-content {
+            background: var(--bg-panel);
+            border-radius: var(--radius);
+            padding: 30px;
+            width: 500px;
+            max-width: 90%;
+            box-shadow: var(--shadow);
+            transform: translateY(20px);
+            transition: var(--transition);
+        }
+
+        .modal.active .modal-content {
+            transform: translateY(0);
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .modal-title {
+            font-size: 24px;
+            font-weight: bold;
+        }
+
+        .close-modal {
+            background: none;
+            border: none;
+            color: var(--text);
+            font-size: 24px;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .close-modal:hover {
+            color: var(--primary);
+        }
+
+        .export-options {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .export-option {
+            background: var(--bg-darker);
+            padding: 15px;
+            border-radius: var(--radius);
+            cursor: pointer;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .export-option:hover {
+            background: var(--primary);
+        }
+
+        .export-option i {
+            font-size: 24px;
+        }
+
+        .option-text {
+            flex: 1;
+        }
+
+        .option-title {
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .option-desc {
+            font-size: 14px;
+            color: var(--text-dim);
+        }
+
+        /* Плейлист */
+        .playlist {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .playlist-tracks {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            overflow-y: auto;
+        }
+
+        .playlist-track {
+            display: flex;
+            align-items: center;
+            padding: 10px;
+            border-bottom: 1px solid var(--border);
+            transition: var(--transition);
+        }
+
+        .playlist-track:hover {
+            background: var(--bg-hover);
+        }
+
+        .track-color {
+            width: 20px;
+            height: 20px;
+            border-radius: 4px;
+            margin-right: 10px;
+        }
+
+        .track-name {
+            flex: 1;
+            font-weight: 500;
+        }
+
+        .track-controls {
+            display: flex;
+            gap: 10px;
+        }
+
+        /* Канальный рак */
+        .channel-rack {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            padding: 10px;
+            background: var(--bg-panel);
+            border-radius: var(--radius);
+            margin-bottom: 20px;
+        }
+
+        .channel {
+            display: flex;
+            align-items: center;
+            padding: 8px;
+            border-radius: var(--radius);
+            background: var(--bg-darker);
+            transition: var(--transition);
+        }
+
+        .channel:hover {
+            background: var(--bg-hover);
+        }
+
+        .channel.active {
+            background: var(--primary);
+        }
+
+        .channel-color {
+            width: 16px;
+            height: 16px;
+            border-radius: 3px;
+            margin-right: 10px;
+        }
+
+        .channel-name {
+            flex: 1;
+            font-size: 14px;
+        }
+
+        .channel-volume {
+            width: 80px;
+        }
+
+        /* Эффекты */
+        .effects-panel {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 15px;
+            padding: 10px;
+        }
+
+        .effect-plugin {
+            background: var(--bg-panel);
+            border-radius: var(--radius);
+            padding: 15px;
+            box-shadow: var(--shadow);
+        }
+
+        .effect-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+            padding-bottom: 8px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .effect-title {
+            font-weight: bold;
+            font-size: 16px;
+        }
+
+        .effect-controls {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .control-group {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        .control-label {
+            font-size: 12px;
+            color: var(--text-dim);
+        }
+
+        /* Паттерны */
+        .patterns-panel {
+            display: flex;
+            gap: 10px;
+            padding: 10px;
+            overflow-x: auto;
+        }
+
+        .pattern {
+            background: var(--bg-panel);
+            border-radius: var(--radius);
+            padding: 15px;
+            min-width: 120px;
+            cursor: pointer;
+            transition: var(--transition);
+            box-shadow: var(--shadow);
+        }
+
+        .pattern:hover {
+            background: var(--primary);
+            transform: translateY(-3px);
+        }
+
+        .pattern.active {
+            background: var(--primary);
+        }
+
+        .pattern-name {
+            font-weight: bold;
+            text-align: center;
+            margin-bottom: 8px;
+        }
+
+        .pattern-steps {
+            display: flex;
+            gap: 3px;
+        }
+
+        .pattern-step {
+            flex: 1;
+            height: 20px;
+            background: var(--bg-darker);
+            border-radius: 2px;
+        }
+
+        .pattern-step.active {
+            background: var(--primary);
+        }
+
+        /* Браузер */
+        .browser {
+            display: flex;
+            height: 100%;
+        }
+
+        .browser-sidebar {
+            width: 200px;
+            background: var(--bg-panel);
+            border-right: 1px solid var(--border);
+            padding: 15px;
+            overflow-y: auto;
+        }
+
+        .browser-category {
+            padding: 8px 12px;
+            border-radius: var(--radius);
+            cursor: pointer;
+            transition: var(--transition);
+            margin-bottom: 5px;
+        }
+
+        .browser-category:hover {
+            background: var(--bg-hover);
+        }
+
+        .browser-category.active {
+            background: var(--primary);
+        }
+
+        .browser-content {
+            flex: 1;
+            padding: 15px;
+            overflow-y: auto;
+        }
+
+        /* Пианино инструменты */
+        .piano-tools {
+            display: flex;
+            gap: 10px;
+            padding: 10px;
+            background: var(--bg-panel);
+            border-radius: var(--radius);
+            margin-bottom: 15px;
+        }
+
+        .tool-btn {
+            padding: 8px 12px;
+            background: var(--bg-darker);
+            border: none;
+            border-radius: var(--radius);
+            color: var(--text);
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .tool-btn:hover {
+            background: var(--bg-hover);
+        }
+
+        .tool-btn.active {
+            background: var(--primary);
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <!-- Переключатель темы -->
+    <div class="theme-toggle">
+        <div class="theme-btn" id="themeToggle">
+            <i class="fas fa-moon"></i>
+        </div>
+    </div>
+
+    <!-- Главное меню -->
+    <div class="main-menu" id="mainMenu">
+        <div class="logo">BEATFORGE PRO</div>
+        <div class="menu-buttons">
+            <button class="menu-btn" id="newProjectBtn">
+                <i class="fas fa-plus"></i> Новый проект
+            </button>
+            <button class="menu-btn secondary" id="loadProjectBtn">
+                <i class="fas fa-folder-open"></i> Загрузить проект
+            </button>
+            <button class="menu-btn secondary" id="tutorialBtn">
+                <i class="fas fa-graduation-cap"></i> Обучение
+            </button>
+            <button class="menu-btn secondary" id="settingsBtn">
+                <i class="fas fa-cog"></i> Настройки
+            </button>
+        </div>
+    </div>
+
+    <!-- Панель управления -->
+    <div class="control-panel">
+        <div class="transport-controls">
+            <button class="btn btn-play" id="playBtn">
+                <i class="fas fa-play"></i> Play
+            </button>
+            <button class="btn btn-stop" id="stopBtn">
+                <i class="fas fa-stop"></i> Stop
+            </button>
+            <button class="btn btn-secondary" id="recordBtn">
+                <i class="fas fa-circle"></i> Record
+            </button>
+            <button class="btn btn-secondary" id="exportBtn">
+                <i class="fas fa-file-export"></i> Export
+            </button>
+            <button class="btn btn-secondary" id="metronomeBtn">
+                <i class="fas fa-metronome"></i> Metronome
+            </button>
+        </div>
+        
+        <div class="bpm-control">
+            <span>BPM:</span>
+            <div class="bpm-value" id="bpmValue">120</div>
+            <input type="range" min="60" max="180" value="120" id="bpmSlider">
+        </div>
+        
+        <div>
+            <button class="btn btn-secondary" id="saveBtn">
+                <i class="fas fa-save"></i> Save
+            </button>
+            <button class="btn btn-secondary" id="menuBtn">
+                <i class="fas fa-bars"></i> Menu
+            </button>
+        </div>
+    </div>
+
+    <!-- Визуализатор волны -->
+    <div class="wave-visualizer">
+        <canvas class="wave-canvas" id="waveCanvas"></canvas>
+        <div class="wave-animation" id="waveAnimation"></div>
+    </div>
+
+    <!-- Основная рабочая область -->
+    <div class="work-area">
+        <!-- Степ-секвенсор -->
+        <div class="step-sequencer">
+            <div class="sequencer-header">
+                <div class="instrument-label">Instrument</div>
+                <div class="steps">
+                    <div class="step-label">1</div>
+                    <div class="step-label">2</div>
+                    <div class="step-label">3</div>
+                    <div class="step-label">4</div>
+                    <div class="step-label">5</div>
+                    <div class="step-label">6</div>
+                    <div class="step-label">7</div>
+                    <div class="step-label">8</div>
+                    <div class="step-label">9</div>
+                    <div class="step-label">10</div>
+                    <div class="step-label">11</div>
+                    <div class="step-label">12</div>
+                    <div class="step-label">13</div>
+                    <div class="step-label">14</div>
+                    <div class="step-label">15</div>
+                    <div class="step-label">16</div>
+                </div>
+            </div>
+            
+            <div class="steps-container" id="stepsContainer">
+                <!-- Строки будут добавлены через JS -->
+            </div>
+        </div>
+
+        <!-- Драм-пады -->
+        <div class="drum-pads">
+            <!-- Пады будут добавлены через JS -->
+        </div>
+    </div>
+
+    <!-- Нижнее меню -->
+    <div class="bottom-menu">
+        <div class="menu-item active" data-panel="sequencer">
+            <i class="fas fa-sliders-h"></i>
+            <span>Sequencer</span>
+        </div>
+        <div class="menu-item" data-panel="pianoRoll">
+            <i class="fas fa-music"></i>
+            <span>Piano Roll</span>
+        </div>
+        <div class="menu-item" data-panel="mixer">
+            <i class="fas fa-sliders-h"></i>
+            <span>Mixer</span>
+        </div>
+        <div class="menu-item" data-panel="playlist">
+            <i class="fas fa-list-ol"></i>
+            <span>Playlist</span>
+        </div>
+        <div class="menu-item" data-panel="channelRack">
+            <i class="fas fa-th"></i>
+            <span>Channel Rack</span>
+        </div>
+        <div class="menu-item" data-panel="browser">
+            <i class="fas fa-folder"></i>
+            <span>Browser</span>
+        </div>
+        <div class="menu-item" data-panel="patterns">
+            <i class="fas fa-clone"></i>
+            <span>Patterns</span>
+        </div>
+        <div class="menu-item" data-panel="effects">
+            <i class="fas fa-wave-square"></i>
+            <span>Effects</span>
+        </div>
+        <div class="menu-item" data-panel="analyzer">
+            <i class="fas fa-chart-bar"></i>
+            <span>Analyzer</span>
+        </div>
+        <div class="menu-item" data-panel="freshtunes">
+            <i class="fas fa-cloud-upload-alt"></i>
+            <span>Freshtunes</span>
+        </div>
+        <div class="menu-item" data-panel="learn">
+            <i class="fas fa-graduation-cap"></i>
+            <span>Learn</span>
+        </div>
+    </div>
+
+    <!-- Панель пианино-ролла -->
+    <div class="panel" id="pianoRoll">
+        <div class="panel-header">
+            <h2><i class="fas fa-music"></i> Piano Roll</h2>
+            <button class="btn btn-secondary" id="closePianoRoll">
+                <i class="fas fa-times"></i> Close
+            </button>
+        </div>
+        <div class="piano-tools">
+            <button class="tool-btn active" data-tool="pencil">
+                <i class="fas fa-pencil-alt"></i> Pencil
+            </button>
+            <button class="tool-btn" data-tool="eraser">
+                <i class="fas fa-eraser"></i> Eraser
+            </button>
+            <button class="tool-btn" data-tool="select">
+                <i class="fas fa-mouse-pointer"></i> Select
+            </button>
+            <button class="tool-btn" data-tool="slice">
+                <i class="fas fa-cut"></i> Slice
+            </button>
+            <button class="tool-btn" data-tool="zoom">
+                <i class="fas fa-search"></i> Zoom
+            </button>
+        </div>
+        <div class="piano-roll-content">
+            <div class="piano-keys" id="pianoKeys">
+                <!-- Клавиши будут добавлены через JS -->
+            </div>
+            <div class="piano-grid">
+                <div class="grid-container">
+                    <div class="grid-background"></div>
+                    <div class="grid-notes" id="gridNotes"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Панель микшера -->
+    <div class="panel" id="mixer">
+        <div class="panel-header">
+            <h2><i class="fas fa-sliders-h"></i> Mixer</h2>
+            <button class="btn btn-secondary" id="closeMixer">
+                <i class="fas fa-times"></i> Close
+            </button>
+        </div>
+        <div class="mixer-content" id="mixerContent">
+            <!-- Каналы микшера будут добавлены через JS -->
+        </div>
+    </div>
+
+    <!-- Панель плейлиста -->
+    <div class="panel" id="playlist">
+        <div class="panel-header">
+            <h2><i class="fas fa-list-ol"></i> Playlist</h2>
+            <button class="btn btn-secondary" id="closePlaylist">
+                <i class="fas fa-times"></i> Close
+            </button>
+        </div>
+        <div class="playlist">
+            <div class="playlist-tracks" id="playlistTracks">
+                <!-- Треки будут добавлены через JS -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Панель Channel Rack -->
+    <div class="panel" id="channelRack">
+        <div class="panel-header">
+            <h2><i class="fas fa-th"></i> Channel Rack</h2>
+            <button class="btn btn-secondary" id="closeChannelRack">
+                <i class="fas fa-times"></i> Close
+            </button>
+        </div>
+        <div class="channel-rack" id="channelRackContent">
+            <!-- Каналы будут добавлены через JS -->
+        </div>
+    </div>
+
+    <!-- Панель браузера -->
+    <div class="panel" id="browser">
+        <div class="panel-header">
+            <h2><i class="fas fa-folder"></i> Browser</h2>
+            <button class="btn btn-secondary" id="closeBrowser">
+                <i class="fas fa-times"></i> Close
+            </button>
+        </div>
+        <div class="browser">
+            <div class="browser-sidebar">
+                <div class="browser-category active">Packs</div>
+                <div class="browser-category">Kicks</div>
+                <div class="browser-category">Snares</div>
+                <div class="browser-category">Hi-Hats</div>
+                <div class="browser-category">Basses</div>
+                <div class="browser-category">Synths</div>
+                <div class="browser-category">FX</div>
+                <div class="browser-category">Loops</div>
+                <div class="browser-category">Instruments</div>
+            </div>
+            <div class="browser-content" id="browserContent">
+                <!-- Контент браузера будет добавлен через JS -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Панель паттернов -->
+    <div class="panel" id="patterns">
+        <div class="panel-header">
+            <h2><i class="fas fa-clone"></i> Patterns</h2>
+            <button class="btn btn-secondary" id="closePatterns">
+                <i class="fas fa-times"></i> Close
+            </button>
+        </div>
+        <div class="patterns-panel" id="patternsPanel">
+            <!-- Паттерны будут добавлены через JS -->
+        </div>
+    </div>
+
+    <!-- Панель эффектов -->
+    <div class="panel" id="effects">
+        <div class="panel-header">
+            <h2><i class="fas fa-wave-square"></i> Effects</h2>
+            <button class="btn btn-secondary" id="closeEffects">
+                <i class="fas fa-times"></i> Close
+            </button>
+        </div>
+        <div class="effects-panel" id="effectsPanel">
+            <!-- Эффекты будут добавлены через JS -->
+        </div>
+    </div>
+
+    <!-- Панель анализатора -->
+    <div class="panel" id="analyzer">
+        <div class="panel-header">
+            <h2><i class="fas fa-chart-bar"></i> Audio Analyzer</h2>
+            <button class="btn btn-secondary" id="closeAnalyzer">
+                <i class="fas fa-times"></i> Close
+            </button>
+        </div>
+        <div class="audio-analyzer">
+            <div class="upload-area" id="uploadArea">
+                <i class="fas fa-file-upload"></i>
+                <h3>Загрузите аудиофайл для анализа</h3>
+                <p>Поддерживаются форматы: MP3, WAV, OGG</p>
+                <p class="warning-text"><i class="fas fa-exclamation-triangle"></i> Для лучшего анализа рекомендуется использовать инструментальные треки без вокала</p>
+                <button class="btn" id="uploadBtn">
+                    <i class="fas fa-upload"></i> Выбрать файл
+                </button>
+                <input type="file" id="audioFile" accept="audio/*" style="display: none;">
+            </div>
+            <div class="analyzer-visualization">
+                <canvas class="analyzer-canvas" id="analyzerCanvas"></canvas>
+            </div>
+            <div class="analysis-results" id="analysisResults" style="display: none;">
+                <h3>Результаты анализа</h3>
+                <div class="results-grid">
+                    <div class="result-item">
+                        <div class="result-label">Темп (BPM)</div>
+                        <div class="result-value" id="bpmResult">-</div>
+                    </div>
+                    <div class="result-item">
+                        <div class="result-label">Ключ</div>
+                        <div class="result-value" id="keyResult">-</div>
+                    </div>
+                    <div class="result-item">
+                        <div class="result-label">Уровень громкости</div>
+                        <div class="result-value" id="volumeResult">-</div>
+                    </div>
+                    <div class="result-item">
+                        <div class="result-label">Длительность</div>
+                        <div class="result-value" id="durationResult">-</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Панель Freshtunes -->
+    <div class="panel" id="freshtunes">
+        <div class="panel-header">
+            <h2><i class="fas fa-cloud-upload-alt"></i> Freshtunes Distribution</h2>
+            <button class="btn btn-secondary" id="closeFreshtunes">
+                <i class="fas fa-times"></i> Close
+            </button>
+        </div>
+        <div class="freshtunes-panel">
+            <div class="freshtunes-login" id="freshtunesLogin">
+                <h3>Вход в аккаунт Freshtunes</h3>
+                <p>Войдите в свой аккаунт, чтобы распределять музыку на все площадки</p>
+                <div class="login-form">
+                    <div class="form-group">
+                        <label for="loginEmail">Email</label>
+                        <input type="email" id="loginEmail" placeholder="your@email.com">
+                    </div>
+                    <div class="form-group">
+                        <label for="loginPassword">Пароль</label>
+                        <input type="password" id="loginPassword" placeholder="Ваш пароль">
+                    </div>
+                    <button class="btn" id="loginBtn">
+                        <i class="fas fa-sign-in-alt"></i> Войти
+                    </button>
+                </div>
+                <p class="mt-10">Нет аккаунта? <a href="https://freshtunes.ru" target="_blank" style="color: var(--primary);">Зарегистрируйтесь на Freshtunes</a></p>
+            </div>
+            <div class="freshtunes-dashboard" id="freshtunesDashboard">
+                <div class="dashboard-header">
+                    <div class="user-info">
+                        <div class="user-avatar" id="userAvatar">U</div>
+                        <div>
+                            <div class="user-name" id="userName">Пользователь</div>
+                            <div class="user-email" id="userEmail">user@example.com</div>
+                        </div>
+                    </div>
+                    <button class="btn btn-secondary" id="logoutBtn">
+                        <i class="fas fa-sign-out-alt"></i> Выйти
+                    </button>
+                </div>
+                <h3>Распределение музыки</h3>
+                <p>Загрузите ваш трек для распространения на все музыкальные площадки</p>
+                
+                <div class="track-upload">
+                    <h4>Загрузка трека</h4>
+                    <div class="track-info">
+                        <div class="track-cover">
+                            <i class="fas fa-music"></i>
+                        </div>
+                        <div class="track-details">
+                            <div class="form-group">
+                                <label for="trackTitle">Название трека</label>
+                                <input type="text" id="trackTitle" placeholder="Введите название">
+                            </div>
+                            <div class="form-group">
+                                <label for="trackArtist">Исполнитель</label>
+                                <input type="text" id="trackArtist" placeholder="Введите имя исполнителя">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="trackFile">Аудиофайл (MP3, WAV)</label>
+                        <input type="file" id="trackFile" accept="audio/*">
+                    </div>
+                    <div class="form-group">
+                        <label for="trackGenre">Жанр</label>
+                        <select id="trackGenre">
+                            <option value="pop">Поп</option>
+                            <option value="rock">Рок</option>
+                            <option value="hiphop">Хип-хоп</option>
+                            <option value="electronic">Электронная</option>
+                            <option value="jazz">Джаз</option>
+                            <option value="classical">Классическая</option>
+                            <option value="other">Другое</option>
+                        </select>
+                    </div>
+                    <button class="btn" id="submitTrackBtn">
+                        <i class="fas fa-paper-plane"></i> Отправить на модерацию
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Панель обучения -->
+    <div class="panel" id="learn">
+        <div class="panel-header">
+            <h2><i class="fas fa-graduation-cap"></i> Learn BeatForge</h2>
+            <button class="btn btn-secondary" id="closeLearn">
+                <i class="fas fa-times"></i> Close
+            </button>
+        </div>
+        <div class="learn-content" id="learnContent">
+            <!-- Уроки будут добавлены через JS -->
+        </div>
+    </div>
+
+    <!-- Модальное окно экспорта -->
+    <div class="modal" id="exportModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="modal-title">Export Project</div>
+                <button class="close-modal" id="closeExportModal">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="export-options">
+                <div class="export-option" data-format="wav">
+                    <i class="fas fa-file-audio"></i>
+                    <div class="option-text">
+                        <div class="option-title">Export as WAV</div>
+                        <div class="option-desc">High quality audio file, compatible with all DAWs</div>
+                    </div>
+                </div>
+                <div class="export-option" data-format="mp3">
+                    <i class="fas fa-file-audio"></i>
+                    <div class="option-text">
+                        <div class="option-title">Export as MP3</div>
+                        <div class="option-desc">Compressed audio file, smaller size</div>
+                    </div>
+                </div>
+                <div class="export-option" data-format="midi">
+                    <i class="fas fa-file-music"></i>
+                    <div class="option-text">
+                        <div class="option-title">Export as MIDI</div>
+                        <div class="option-desc">MIDI file that can be imported into FL Studio</div>
+                    </div>
+                </div>
+                <div class="export-option" data-format="project">
+                    <i class="fas fa-file-archive"></i>
+                    <div class="option-text">
+                        <div class="option-title">Export Project</div>
+                        <div class="option-desc">Full BeatForge project file for later editing</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Основные переменные
+        let isPlaying = false;
+        let currentStep = 0;
+        let bpm = 120;
+        let stepInterval;
+        let audioContext;
+        let activeNotes = [];
+        let currentPanel = 'sequencer';
+        let projectData = {
+            name: 'Untitled Project',
+            bpm: 120,
+            patterns: {},
+            samples: {},
+            mixer: {}
+        };
+        let isLoggedIn = false;
+        let currentTheme = 'dark';
+        let currentTool = 'pencil';
+
+        // Инициализация при загрузке
+        document.addEventListener('DOMContentLoaded', function() {
+            initAudio();
+            initSequencer();
+            initDrumPads();
+            initPianoRoll();
+            initMixer();
+            initPlaylist();
+            initChannelRack();
+            initBrowser();
+            initPatterns();
+            initEffects();
+            initLibrary();
+            initLearn();
+            initEventListeners();
+            initWaveVisualizer();
+            
+            // Показываем главное меню
+            document.getElementById('mainMenu').classList.remove('hidden');
+        });
+
+        // Инициализация аудио
+        function initAudio() {
+            try {
+                audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                
+                // Создаем мастер-канал с компрессором
+                const compressor = audioContext.createDynamicsCompressor();
+                compressor.threshold.value = -24;
+                compressor.knee.value = 30;
+                compressor.ratio.value = 12;
+                compressor.attack.value = 0.003;
+                compressor.release.value = 0.25;
+                compressor.connect(audioContext.destination);
+                
+                // Глобальный выход
+                window.masterGain = audioContext.createGain();
+                window.masterGain.gain.value = 0.8;
+                window.masterGain.connect(compressor);
+                
+                console.log('Audio context initialized');
+            } catch (e) {
+                console.error('Web Audio API is not supported in this browser', e);
+                alert('Ваш браузер не поддерживает Web Audio API. Пожалуйста, используйте современный браузер для полной функциональности.');
+            }
+        }
+
+        // Инициализация секвенсора
+        function initSequencer() {
+            const instruments = [
+                { name: 'Kick', color: '#ff7b00', key: 'Q', type: 'drum' },
+                { name: 'Snare', color: '#4caf50', key: 'W', type: 'drum' },
+                { name: 'Hi-Hat', color: '#2196f3', key: 'E', type: 'drum' },
+                { name: 'Clap', color: '#9c27b0', key: 'R', type: 'drum' },
+                { name: 'Bass', color: '#ff9800', key: 'A', type: 'bass' },
+                { name: 'Synth', color: '#f44336', key: 'S', type: 'synth' },
+                { name: 'Chord', color: '#00bcd4', key: 'D', type: 'chord' },
+                { name: 'FX', color: '#673ab7', key: 'F', type: 'fx' }
+            ];
+
+            const container = document.getElementById('stepsContainer');
+            container.innerHTML = '';
+
+            instruments.forEach(instrument => {
+                const row = document.createElement('div');
+                row.className = 'step-row';
+                
+                const label = document.createElement('div');
+                label.className = 'step-label';
+                label.innerHTML = `<i class="fas fa-drum"></i> ${instrument.name}`;
+                label.style.color = instrument.color;
+                row.appendChild(label);
+                
+                const steps = document.createElement('div');
+                steps.className = 'steps';
+                
+                for (let i = 0; i < 16; i++) {
+                    const step = document.createElement('div');
+                    step.className = 'step';
+                    step.dataset.instrument = instrument.name;
+                    step.dataset.step = i;
+                    step.addEventListener('click', toggleStep);
+                    steps.appendChild(step);
+                }
+                
+                row.appendChild(steps);
+                container.appendChild(row);
+            });
+        }
+
+        // Инициализация драм-падов
+        function initDrumPads() {
+            const pads = [
+                { name: 'Kick', key: 'Q', color: '#ff7b00', type: 'drum', icon: 'fa-drum' },
+                { name: 'Snare', key: 'W', color: '#4caf50', type: 'drum', icon: 'fa-drum' },
+                { name: 'Hi-Hat', key: 'E', color: '#2196f3', type: 'drum', icon: 'fa-drum' },
+                { name: 'Clap', key: 'R', color: '#9c27b0', type: 'drum', icon: 'fa-drum' },
+                { name: 'Bass', key: 'A', color: '#ff9800', type: 'bass', icon: 'fa-guitar' },
+                { name: 'Synth', key: 'S', color: '#f44336', type: 'synth', icon: 'fa-sliders-h' },
+                { name: 'Chord', key: 'D', color: '#00bcd4', type: 'chord', icon: 'fa-music' },
+                { name: 'FX', key: 'F', color: '#673ab7', type: 'fx', icon: 'fa-bolt' }
+            ];
+
+            const container = document.querySelector('.drum-pads');
+            container.innerHTML = '';
+
+            pads.forEach(pad => {
+                const padElement = document.createElement('div');
+                padElement.className = 'drum-pad';
+                padElement.dataset.sound = pad.name;
+                padElement.style.borderColor = pad.color;
+                
+                const icon = document.createElement('i');
+                icon.className = `fas ${pad.icon}`;
+                icon.style.color = pad.color;
+                icon.style.fontSize = '24px';
+                icon.style.marginBottom = '10px';
+                
+                const name = document.createElement('div');
+                name.className = 'pad-name';
+                name.textContent = pad.name;
+                name.style.color = pad.color;
+                
+                const key = document.createElement('div');
+                key.className = 'pad-key';
+                key.textContent = pad.key;
+                
+                padElement.appendChild(icon);
+                padElement.appendChild(name);
+                padElement.appendChild(key);
+                
+                padElement.addEventListener('click', function() {
+                    playSound(pad.name);
+                    this.classList.add('active');
+                    setTimeout(() => {
+                        this.classList.remove('active');
+                    }, 100);
+                });
+                
+                container.appendChild(padElement);
+            });
+        }
+
+        // Инициализация пианино-ролла
+        function initPianoRoll() {
+            const keysContainer = document.getElementById('pianoKeys');
+            const notes = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B'];
+            const octaves = [3, 4, 5];
+            
+            keysContainer.innerHTML = '';
+            
+            octaves.forEach(octave => {
+                notes.forEach(note => {
+                    const key = document.createElement('div');
+                    key.className = `piano-key ${note.includes('#') ? 'black' : 'white'}`;
+                    key.textContent = note.includes('#') ? '' : note + octave;
+                    key.dataset.note = note + octave;
+                    
+                    key.addEventListener('mousedown', function() {
+                        playPianoNote(this.dataset.note);
+                        this.classList.add('active');
+                    });
+                    
+                    key.addEventListener('mouseup', function() {
+                        this.classList.remove('active');
+                    });
+                    
+                    key.addEventListener('mouseleave', function() {
+                        this.classList.remove('active');
+                    });
+                    
+                    keysContainer.appendChild(key);
+                });
+            });
+            
+            // Добавляем несколько нот для демонстрации
+            const gridNotes = document.getElementById('gridNotes');
+            for (let i = 0; i < 8; i++) {
+                const note = document.createElement('div');
+                note.className = 'note';
+                note.style.left = `${100 + i * 80}px`;
+                note.style.top = `${100 + i * 30}px`;
+                note.style.width = '60px';
+                note.style.height = '30px';
+                note.style.backgroundColor = getRandomColor();
+                
+                note.addEventListener('click', function() {
+                    if (currentTool === 'eraser') {
+                        this.remove();
+                    }
+                });
+                
+                gridNotes.appendChild(note);
+            }
+
+            // Инициализация инструментов пианино-ролла
+            document.querySelectorAll('.tool-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    document.querySelectorAll('.tool-btn').forEach(b => b.classList.remove('active'));
+                    this.classList.add('active');
+                    currentTool = this.dataset.tool;
+                });
+            });
+        }
+
+        // Инициализация микшера
+        function initMixer() {
+            const channels = [
+                { name: 'Kick', color: '#ff7b00', volume: 0.8, effects: ['Compressor'] },
+                { name: 'Snare', color: '#4caf50', volume: 0.7, effects: ['Reverb'] },
+                { name: 'Hi-Hat', color: '#2196f3', volume: 0.6, effects: [] },
+                { name: 'Clap', color: '#9c27b0', volume: 0.7, effects: ['Delay'] },
+                { name: 'Bass', color: '#ff9800', volume: 0.8, effects: ['EQ'] },
+                { name: 'Synth', color: '#f44336', volume: 0.7, effects: ['Chorus'] },
+                { name: 'Master', color: '#ffffff', volume: 1.0, effects: ['Limiter'] }
+            ];
+
+            const mixer = document.getElementById('mixerContent');
+            mixer.innerHTML = '';
+
+            channels.forEach(channel => {
+                const channelElement = document.createElement('div');
+                channelElement.className = 'mixer-channel';
+                
+                const name = document.createElement('div');
+                name.className = 'channel-name';
+                name.textContent = channel.name;
+                name.style.color = channel.color;
+                channelElement.appendChild(name);
+                
+                const fader = document.createElement('div');
+                fader.className = 'channel-fader';
+                
+                const faderTrack = document.createElement('div');
+                faderTrack.className = 'fader-track';
+                
+                const faderKnob = document.createElement('div');
+                faderKnob.className = 'fader-knob';
+                faderKnob.style.top = `${(1 - channel.volume) * 100}%`;
+                faderKnob.dataset.volume = channel.volume;
+                
+                // Добавляем функциональность фейдера
+                faderKnob.addEventListener('mousedown', function(e) {
+                    e.preventDefault();
+                    const track = this.parentElement;
+                    const trackRect = track.getBoundingClientRect();
+                    const initialY = e.clientY;
+                    const initialTop = parseInt(this.style.top) || 0;
+                    
+                    function moveKnob(e) {
+                        const deltaY = e.clientY - initialY;
+                        let newTop = initialTop + (deltaY / trackRect.height) * 100;
+                        newTop = Math.max(0, Math.min(100, newTop));
+                        this.style.top = `${newTop}%`;
+                        
+                        const volume = 1 - (newTop / 100);
+                        const volumeValue = track.nextElementSibling;
+                        volumeValue.textContent = `${Math.round(volume * 100)}%`;
+                    }
+                    
+                    function stopMoving() {
+                        document.removeEventListener('mousemove', moveKnob);
+                        document.removeEventListener('mouseup', stopMoving);
+                    }
+                    
+                    document.addEventListener('mousemove', moveKnob.bind(this));
+                    document.addEventListener('mouseup', stopMoving);
+                });
+                
+                faderTrack.appendChild(faderKnob);
+                fader.appendChild(faderTrack);
+                
+                const volumeValue = document.createElement('div');
+                volumeValue.textContent = `${Math.round(channel.volume * 100)}%`;
+                volumeValue.style.fontSize = '12px';
+                fader.appendChild(volumeValue);
+                
+                channelElement.appendChild(fader);
+                
+                const controls = document.createElement('div');
+                controls.className = 'channel-controls';
+                
+                // Кнопка соль
+                const soloBtn = document.createElement('button');
+                soloBtn.className = 'btn btn-secondary btn-small';
+                soloBtn.textContent = 'S';
+                soloBtn.style.padding = '4px 8px';
+                soloBtn.style.fontSize = '10px';
+                controls.appendChild(soloBtn);
+                
+                // Кнопка mute
+                const muteBtn = document.createElement('button');
+                muteBtn.className = 'btn btn-secondary btn-small';
+                muteBtn.textContent = 'M';
+                muteBtn.style.padding = '4px 8px';
+                muteBtn.style.fontSize = '10px';
+                controls.appendChild(muteBtn);
+                
+                // Эффекты
+                const effectsLabel = document.createElement('div');
+                effectsLabel.textContent = 'EFFECTS';
+                effectsLabel.style.fontSize = '10px';
+                effectsLabel.style.marginTop = '10px';
+                effectsLabel.style.color = 'var(--text-dim)';
+                controls.appendChild(effectsLabel);
+                
+                const effectList = document.createElement('div');
+                effectList.className = 'effect-list';
+                
+                channel.effects.forEach(effect => {
+                    const effectItem = document.createElement('div');
+                    effectItem.className = 'effect-item';
+                    effectItem.textContent = effect;
+                    effectList.appendChild(effectItem);
+                });
+                
+                // Кнопка добавить эффект
+                const addFxBtn = document.createElement('button');
+                addFxBtn.className = 'btn btn-secondary btn-small';
+                addFxBtn.textContent = '+ Add FX';
+                addFxBtn.style.padding = '4px 8px';
+                addFxBtn.style.fontSize = '10px';
+                addFxBtn.style.marginTop = '5px';
+                addFxBtn.style.width = '100%';
+                addFxBtn.addEventListener('click', function() {
+                    alert(`Добавление эффекта на канал ${channel.name}`);
+                });
+                controls.appendChild(addFxBtn);
+                
+                controls.appendChild(effectList);
+                channelElement.appendChild(controls);
+                
+                mixer.appendChild(channelElement);
+            });
+        }
+
+        // Инициализация плейлиста
+        function initPlaylist() {
+            const tracks = [
+                { name: 'Kick Pattern', color: '#ff7b00' },
+                { name: 'Snare Pattern', color: '#4caf50' },
+                { name: 'Hi-Hat Pattern', color: '#2196f3' },
+                { name: 'Bassline', color: '#ff9800' },
+                { name: 'Melody', color: '#f44336' },
+                { name: 'FX', color: '#673ab7' }
+            ];
+
+            const playlist = document.getElementById('playlistTracks');
+            playlist.innerHTML = '';
+
+            tracks.forEach(track => {
+                const trackElement = document.createElement('div');
+                trackElement.className = 'playlist-track';
+                
+                const color = document.createElement('div');
+                color.className = 'track-color';
+                color.style.backgroundColor = track.color;
+                
+                const name = document.createElement('div');
+                name.className = 'track-name';
+                name.textContent = track.name;
+                
+                const controls = document.createElement('div');
+                controls.className = 'track-controls';
+                
+                const muteBtn = document.createElement('button');
+                muteBtn.className = 'btn btn-secondary btn-small';
+                muteBtn.innerHTML = '<i class="fas fa-volume-mute"></i>';
+                muteBtn.style.padding = '4px 8px';
+                
+                const soloBtn = document.createElement('button');
+                soloBtn.className = 'btn btn-secondary btn-small';
+                soloBtn.innerHTML = '<i class="fas fa-headphones"></i>';
+                soloBtn.style.padding = '4px 8px';
+                
+                controls.appendChild(muteBtn);
+                controls.appendChild(soloBtn);
+                
+                trackElement.appendChild(color);
+                trackElement.appendChild(name);
+                trackElement.appendChild(controls);
+                
+                playlist.appendChild(trackElement);
+            });
+        }
+
+        // Инициализация Channel Rack
+        function initChannelRack() {
+            const channels = [
+                { name: 'Kick', color: '#ff7b00', volume: 0.8 },
+                { name: 'Snare', color: '#4caf50', volume: 0.7 },
+                { name: 'Hi-Hat', color: '#2196f3', volume: 0.6 },
+                { name: 'Clap', color: '#9c27b0', volume: 0.7 },
+                { name: 'Bass', color: '#ff9800', volume: 0.8 },
+                { name: 'Synth', color: '#f44336', volume: 0.7 },
+                { name: 'Chord', color: '#00bcd4', volume: 0.6 },
+                { name: 'FX', color: '#673ab7', volume: 0.5 }
+            ];
+
+            const rack = document.getElementById('channelRackContent');
+            rack.innerHTML = '';
+
+            channels.forEach(channel => {
+                const channelElement = document.createElement('div');
+                channelElement.className = 'channel';
+                
+                const color = document.createElement('div');
+                color.className = 'channel-color';
+                color.style.backgroundColor = channel.color;
+                
+                const name = document.createElement('div');
+                name.className = 'channel-name';
+                name.textContent = channel.name;
+                
+                const volume = document.createElement('input');
+                volume.type = 'range';
+                volume.className = 'channel-volume';
+                volume.min = '0';
+                volume.max = '100';
+                volume.value = channel.volume * 100;
+                
+                channelElement.appendChild(color);
+                channelElement.appendChild(name);
+                channelElement.appendChild(volume);
+                
+                channelElement.addEventListener('click', function() {
+                    document.querySelectorAll('.channel').forEach(c => c.classList.remove('active'));
+                    this.classList.add('active');
+                });
+                
+                rack.appendChild(channelElement);
+            });
+        }
+
+        // Инициализация браузера
+        function initBrowser() {
+            const samples = [
+                { name: 'Kick 1', type: 'Kick', icon: '🥁', category: 'Kicks' },
+                { name: 'Snare 1', type: 'Snare', icon: '🎵', category: 'Snares' },
+                { name: 'Hi-Hat 1', type: 'Hi-Hat', icon: '🔔', category: 'Hi-Hats' },
+                { name: 'Clap 1', type: 'Clap', icon: '👏', category: 'Snares' },
+                { name: 'Bass 1', type: 'Bass', icon: '🎸', category: 'Basses' },
+                { name: 'Synth 1', type: 'Synth', icon: '🎹', category: 'Synths' },
+                { name: 'FX 1', type: 'FX', icon: '🎛️', category: 'FX' },
+                { name: 'Loop 1', type: 'Loop', icon: '🔄', category: 'Loops' },
+                { name: 'Kick 2', type: 'Kick', icon: '🥁', category: 'Kicks' },
+                { name: 'Snare 2', type: 'Snare', icon: '🎵', category: 'Snares' }
+            ];
+
+            const browserContent = document.getElementById('browserContent');
+            browserContent.innerHTML = '';
+
+            samples.forEach(sample => {
+                const sampleItem = document.createElement('div');
+                sampleItem.className = 'sample-item';
+                sampleItem.dataset.category = sample.category;
+                
+                const icon = document.createElement('div');
+                icon.className = 'sample-icon';
+                icon.textContent = sample.icon;
+                
+                const name = document.createElement('div');
+                name.className = 'sample-name';
+                name.textContent = sample.name;
+                
+                const type = document.createElement('div');
+                type.className = 'sample-type';
+                type.textContent = sample.type;
+                
+                sampleItem.appendChild(icon);
+                sampleItem.appendChild(name);
+                sampleItem.appendChild(type);
+                
+                sampleItem.addEventListener('click', function() {
+                    playSound(sample.type);
+                    this.classList.add('pulse');
+                    setTimeout(() => {
+                        this.classList.remove('pulse');
+                    }, 500);
+                });
+                
+                browserContent.appendChild(sampleItem);
+            });
+
+            // Добавляем функциональность категорий браузера
+            document.querySelectorAll('.browser-category').forEach(category => {
+                category.addEventListener('click', function() {
+                    document.querySelectorAll('.browser-category').forEach(c => c.classList.remove('active'));
+                    this.classList.add('active');
+                    
+                    const categoryName = this.textContent;
+                    const samples = document.querySelectorAll('.sample-item');
+                    
+                    samples.forEach(sample => {
+                        if (categoryName === 'Packs' || sample.dataset.category === categoryName) {
+                            sample.style.display = 'flex';
+                        } else {
+                            sample.style.display = 'none';
+                        }
+                    });
+                });
+            });
+        }
+
+        // Инициализация паттернов
+        function initPatterns() {
+            const patterns = [
+                { name: 'Pattern 1', steps: [1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0] },
+                { name: 'Pattern 2', steps: [1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0] },
+                { name: 'Pattern 3', steps: [1, 1, 0, 0, 1, 1, 0, 0, 1, 1, 0, 0, 1, 1, 0, 0] },
+                { name: 'Pattern 4', steps: [1, 0, 0, 1, 0, 1, 0, 0, 1, 0, 0, 1, 0, 1, 0, 0] }
+            ];
+
+            const patternsPanel = document.getElementById('patternsPanel');
+            patternsPanel.innerHTML = '';
+
+            patterns.forEach((pattern, index) => {
+                const patternElement = document.createElement('div');
+                patternElement.className = 'pattern';
+                if (index === 0) patternElement.classList.add('active');
+                
+                const name = document.createElement('div');
+                name.className = 'pattern-name';
+                name.textContent = pattern.name;
+                
+                const steps = document.createElement('div');
+                steps.className = 'pattern-steps';
+                
+                pattern.steps.forEach((step, i) => {
+                    const stepElement = document.createElement('div');
+                    stepElement.className = 'pattern-step';
+                    if (step === 1) stepElement.classList.add('active');
+                    steps.appendChild(stepElement);
+                });
+                
+                patternElement.appendChild(name);
+                patternElement.appendChild(steps);
+                
+                patternElement.addEventListener('click', function() {
+                    document.querySelectorAll('.pattern').forEach(p => p.classList.remove('active'));
+                    this.classList.add('active');
+                    loadPattern(pattern);
+                });
+                
+                patternsPanel.appendChild(patternElement);
+            });
+        }
+
+        // Инициализация эффектов
+        function initEffects() {
+            const effects = [
+                { name: 'EQ', type: 'equalizer' },
+                { name: 'Compressor', type: 'compressor' },
+                { name: 'Reverb', type: 'reverb' },
+                { name: 'Delay', type: 'delay' },
+                { name: 'Chorus', type: 'chorus' },
+                { name: 'Flanger', type: 'flanger' },
+                { name: 'Distortion', type: 'distortion' },
+                { name: 'Filter', type: 'filter' }
+            ];
+
+            const effectsPanel = document.getElementById('effectsPanel');
+            effectsPanel.innerHTML = '';
+
+            effects.forEach(effect => {
+                const effectElement = document.createElement('div');
+                effectElement.className = 'effect-plugin';
+                
+                const header = document.createElement('div');
+                header.className = 'effect-header';
+                
+                const title = document.createElement('div');
+                title.className = 'effect-title';
+                title.textContent = effect.name;
+                
+                const powerBtn = document.createElement('button');
+                powerBtn.className = 'btn btn-secondary btn-small';
+                powerBtn.innerHTML = '<i class="fas fa-power-off"></i>';
+                powerBtn.style.padding = '4px 8px';
+                
+                header.appendChild(title);
+                header.appendChild(powerBtn);
+                
+                const controls = document.createElement('div');
+                controls.className = 'effect-controls';
+                
+                // Добавляем контролы в зависимости от типа эффекта
+                if (effect.type === 'equalizer') {
+                    controls.appendChild(createControlGroup('Low', '80%'));
+                    controls.appendChild(createControlGroup('Mid', '50%'));
+                    controls.appendChild(createControlGroup('High', '70%'));
+                } else if (effect.type === 'compressor') {
+                    controls.appendChild(createControlGroup('Threshold', '-20dB'));
+                    controls.appendChild(createControlGroup('Ratio', '4:1'));
+                    controls.appendChild(createControlGroup('Attack', '10ms'));
+                } else if (effect.type === 'reverb') {
+                    controls.appendChild(createControlGroup('Size', '60%'));
+                    controls.appendChild(createControlGroup('Damp', '40%'));
+                    controls.appendChild(createControlGroup('Mix', '30%'));
+                } else {
+                    controls.appendChild(createControlGroup('Parameter 1', '50%'));
+                    controls.appendChild(createControlGroup('Parameter 2', '50%'));
+                    controls.appendChild(createControlGroup('Mix', '100%'));
+                }
+                
+                effectElement.appendChild(header);
+                effectElement.appendChild(controls);
+                
+                effectsPanel.appendChild(effectElement);
+            });
+        }
+
+        // Создание группы контролов для эффектов
+        function createControlGroup(label, value) {
+            const group = document.createElement('div');
+            group.className = 'control-group';
+            
+            const labelEl = document.createElement('div');
+            labelEl.className = 'control-label';
+            labelEl.textContent = label;
+            
+            const slider = document.createElement('input');
+            slider.type = 'range';
+            slider.min = '0';
+            slider.max = '100';
+            slider.value = value.replace('%', '').replace('dB', '').replace('ms', '').replace(':', '');
+            
+            const valueEl = document.createElement('div');
+            valueEl.className = 'control-label';
+            valueEl.textContent = value;
+            valueEl.style.textAlign = 'right';
+            
+            group.appendChild(labelEl);
+            group.appendChild(slider);
+            group.appendChild(valueEl);
+            
+            return group;
+        }
+
+        // Инициализация библиотеки
+        function initLibrary() {
+            const samples = [
+                { name: 'Kick 1', type: 'Kick', icon: '🥁', category: 'drums' },
+                { name: 'Snare 1', type: 'Snare', icon: '🎵', category: 'drums' },
+                { name: 'Hi-Hat 1', type: 'Hi-Hat', icon: '🔔', category: 'drums' },
+                { name: 'Clap 1', type: 'Clap', icon: '👏', category: 'drums' },
+                { name: 'Bass 1', type: 'Bass', icon: '🎸', category: 'bass' },
+                { name: 'Synth 1', type: 'Synth', icon: '🎹', category: 'synth' },
+                { name: 'FX 1', type: 'FX', icon: '🎛️', category: 'fx' },
+                { name: 'Vocal 1', type: 'Vocal', icon: '🎤', category: 'vocals' },
+                { name: 'Perc 1', type: 'Percussion', icon: '🪘', category: 'percussion' },
+                { name: 'Loop 1', type: 'Loop', icon: '🔄', category: 'loops' },
+                { name: 'Kick 2', type: 'Kick', icon: '🥁', category: 'drums' },
+                { name: 'Snare 2', type: 'Snare', icon: '🎵', category: 'drums' }
+            ];
+
+            const libraryContent = document.getElementById('libraryContent');
+            libraryContent.innerHTML = '';
+
+            samples.forEach(sample => {
+                const sampleItem = document.createElement('div');
+                sampleItem.className = 'sample-item';
+                sampleItem.dataset.category = sample.category;
+                
+                const icon = document.createElement('div');
+                icon.className = 'sample-icon';
+                icon.textContent = sample.icon;
+                
+                const name = document.createElement('div');
+                name.className = 'sample-name';
+                name.textContent = sample.name;
+                
+                const type = document.createElement('div');
+                type.className = 'sample-type';
+                type.textContent = sample.type;
+                
+                sampleItem.appendChild(icon);
+                sampleItem.appendChild(name);
+                sampleItem.appendChild(type);
+                
+                sampleItem.addEventListener('click', function() {
+                    playSound(sample.type);
+                    this.classList.add('pulse');
+                    setTimeout(() => {
+                        this.classList.remove('pulse');
+                    }, 500);
+                });
+                
+                libraryContent.appendChild(sampleItem);
+            });
+        }
+
+        // Инициализация обучения
+        function initLearn() {
+            const lessons = [
+                { 
+                    title: 'Урок 1: Базовый грув', 
+                    description: 'Научитесь создавать простой, но эффективный ритм с помощью кика, снейра и хай-хэта. Узнайте, как работает степ-секвенсор и как расставлять акценты.' 
+                },
+                { 
+                    title: 'Урок 2: Работа с пианино-роллом', 
+                    description: 'Освойте создание мелодий и бас-линий с помощью мощного пианино-ролла. Научитесь рисовать ноты, изменять их длительность и создавать выразительные партии.' 
+                },
+                { 
+                    title: 'Урок 3: Основы сведения', 
+                    description: 'Узнайте, как использовать микшер для балансировки громкости и применения эффектов. Изучите работу с эквалайзером, компрессором и реверберацией.' 
+                },
+                { 
+                    title: 'Урок 4: Создание полного трека', 
+                    description: 'Соберите все знания вместе и создайте свой первый полноценный бит. Узнайте о структуре трека, аранжировке и финальном сведении.' 
+                }
+            ];
+
+            const learnContent = document.getElementById('learnContent');
+            learnContent.innerHTML = '';
+
+            lessons.forEach(lesson => {
+                const lessonElement = document.createElement('div');
+                lessonElement.className = 'lesson';
+                
+                const title = document.createElement('div');
+                title.className = 'lesson-title';
+                title.innerHTML = `<i class="fas fa-play-circle"></i> ${lesson.title}`;
+                
+                const desc = document.createElement('div');
+                desc.className = 'lesson-desc';
+                desc.textContent = lesson.description;
+                
+                lessonElement.appendChild(title);
+                lessonElement.appendChild(desc);
+                
+                lessonElement.addEventListener('click', function() {
+                    alert(`Запуск урока: ${lesson.title}`);
+                });
+                
+                learnContent.appendChild(lessonElement);
+            });
+        }
+
+        // Инициализация слушателей событий
+        function initEventListeners() {
+            // Главное меню
+            document.getElementById('newProjectBtn').addEventListener('click', function() {
+                document.getElementById('mainMenu').classList.add('hidden');
+                createNewProject();
+            });
+            
+            document.getElementById('loadProjectBtn').addEventListener('click', function() {
+                alert('Загрузка проекта...');
+                // В реальном приложении здесь будет код для загрузки проекта
+            });
+            
+            document.getElementById('tutorialBtn').addEventListener('click', function() {
+                document.getElementById('mainMenu').classList.add('hidden');
+                switchPanel('learn');
+            });
+            
+            document.getElementById('settingsBtn').addEventListener('click', function() {
+                alert('Открытие настроек...');
+            });
+            
+            document.getElementById('menuBtn').addEventListener('click', function() {
+                document.getElementById('mainMenu').classList.remove('hidden');
+            });
+
+            // Кнопки транспорта
+            document.getElementById('playBtn').addEventListener('click', togglePlay);
+            document.getElementById('stopBtn').addEventListener('click', stopPlayback);
+            document.getElementById('recordBtn').addEventListener('click', toggleRecord);
+            document.getElementById('exportBtn').addEventListener('click', function() {
+                document.getElementById('exportModal').classList.add('active');
+            });
+            
+            document.getElementById('metronomeBtn').addEventListener('click', function() {
+                this.classList.toggle('active');
+                alert('Метроном ' + (this.classList.contains('active') ? 'включен' : 'выключен'));
+            });
+            
+            // Слайдер BPM
+            document.getElementById('bpmSlider').addEventListener('input', function() {
+                bpm = this.value;
+                document.getElementById('bpmValue').textContent = bpm;
+                if (isPlaying) {
+                    stopPlayback();
+                    startPlayback();
+                }
+            });
+            
+            // Кнопки сохранения/загрузки
+            document.getElementById('saveBtn').addEventListener('click', saveProject);
+            
+            // Нижнее меню
+            document.querySelectorAll('.menu-item').forEach(item => {
+                item.addEventListener('click', function() {
+                    switchPanel(this.dataset.panel);
+                });
+            });
+            
+            // Кнопки закрытия панелей
+            document.getElementById('closePianoRoll').addEventListener('click', function() {
+                switchPanel('sequencer');
+            });
+            
+            document.getElementById('closeMixer').addEventListener('click', function() {
+                switchPanel('sequencer');
+            });
+            
+            document.getElementById('closePlaylist').addEventListener('click', function() {
+                switchPanel('sequencer');
+            });
+            
+            document.getElementById('closeChannelRack').addEventListener('click', function() {
+                switchPanel('sequencer');
+            });
+            
+            document.getElementById('closeBrowser').addEventListener('click', function() {
+                switchPanel('sequencer');
+            });
+            
+            document.getElementById('closePatterns').addEventListener('click', function() {
+                switchPanel('sequencer');
+            });
+            
+            document.getElementById('closeEffects').addEventListener('click', function() {
+                switchPanel('sequencer');
+            });
+            
+            document.getElementById('closeAnalyzer').addEventListener('click', function() {
+                switchPanel('sequencer');
+            });
+            
+            document.getElementById('closeFreshtunes').addEventListener('click', function() {
+                switchPanel('sequencer');
+            });
+            
+            document.getElementById('closeLearn').addEventListener('click', function() {
+                switchPanel('sequencer');
+            });
+            
+            // Модальное окно экспорта
+            document.getElementById('closeExportModal').addEventListener('click', function() {
+                document.getElementById('exportModal').classList.remove('active');
+            });
+            
+            document.querySelectorAll('.export-option').forEach(option => {
+                option.addEventListener('click', function() {
+                    const format = this.dataset.format;
+                    exportProject(format);
+                    document.getElementById('exportModal').classList.remove('active');
+                });
+            });
+            
+            // Анализатор аудио
+            document.getElementById('uploadBtn').addEventListener('click', function() {
+                document.getElementById('audioFile').click();
+            });
+            
+            document.getElementById('audioFile').addEventListener('change', function(e) {
+                if (e.target.files.length > 0) {
+                    const file = e.target.files[0];
+                    analyzeAudio(file);
+                }
+            });
+            
+            // Freshtunes
+            document.getElementById('loginBtn').addEventListener('click', function() {
+                const email = document.getElementById('loginEmail').value;
+                const password = document.getElementById('loginPassword').value;
+                
+                if (email && password) {
+                    loginToFreshtunes(email);
+                } else {
+                    alert('Пожалуйста, введите email и пароль');
+                }
+            });
+            
+            document.getElementById('logoutBtn').addEventListener('click', function() {
+                logoutFromFreshtunes();
+            });
+            
+            document.getElementById('submitTrackBtn').addEventListener('click', function() {
+                submitTrackToFreshtunes();
+            });
+            
+            // Переключатель темы
+            document.getElementById('themeToggle').addEventListener('click', toggleTheme);
+            
+            // Слушатель клавиш
+            document.addEventListener('keydown', handleKeyPress);
+        }
+
+        // Инициализация визуализатора волны
+        function initWaveVisualizer() {
+            const canvas = document.getElementById('waveCanvas');
+            const ctx = canvas.getContext('2d');
+            
+            function resizeCanvas() {
+                canvas.width = canvas.offsetWidth;
+                canvas.height = canvas.offsetHeight;
+            }
+            
+            resizeCanvas();
+            window.addEventListener('resize', resizeCanvas);
+            
+            // Анимация волны
+            function drawWave() {
+                if (!isPlaying) return;
+                
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                
+                // Градиентный фон
+                const gradient = ctx.createLinearGradient(0, 0, 0, canvas.height);
+                gradient.addColorStop(0, 'rgba(18, 18, 18, 0.8)');
+                gradient.addColorStop(1, 'rgba(30, 30, 30, 0.8)');
+                ctx.fillStyle = gradient;
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+                
+                // Волна
+                ctx.fillStyle = 'rgba(255, 123, 0, 0.3)';
+                ctx.beginPath();
+                
+                const width = canvas.width;
+                const height = canvas.height;
+                const centerY = height / 2;
+                
+                ctx.moveTo(0, centerY);
+                
+                for (let x = 0; x < width; x++) {
+                    const time = Date.now() / 200;
+                    const y = centerY + Math.sin((x / width) * 15 + time) * 
+                              Math.sin(x / 25 + time * 0.5) * (height / 3) *
+                              (0.7 + 0.3 * Math.sin(time * 0.2));
+                    ctx.lineTo(x, y);
+                }
+                
+                ctx.lineTo(width, height);
+                ctx.lineTo(0, height);
+                ctx.closePath();
+                ctx.fill();
+                
+                // Вторая волна
+                ctx.fillStyle = 'rgba(255, 157, 64, 0.2)';
+                ctx.beginPath();
+                ctx.moveTo(0, centerY);
+                
+                for (let x = 0; x < width; x++) {
+                    const time = Date.now() / 300;
+                    const y = centerY + Math.cos((x / width) * 20 + time) * 
+                              Math.cos(x / 30 + time * 0.3) * (height / 4) *
+                              (0.5 + 0.2 * Math.cos(time * 0.1));
+                    ctx.lineTo(x, y);
+                }
+                
+                ctx.lineTo(width, height);
+                ctx.lineTo(0, height);
+                ctx.closePath();
+                ctx.fill();
+                
+                requestAnimationFrame(drawWave);
+            }
+            
+            // Запускаем анимацию при воспроизведении
+            if (isPlaying) {
+                drawWave();
+            }
+        }
+
+        // Функции воспроизведения
+        function togglePlay() {
+            if (isPlaying) {
+                stopPlayback();
+            } else {
+                startPlayback();
+            }
+        }
+
+        function startPlayback() {
+            isPlaying = true;
+            document.getElementById('playBtn').innerHTML = '<i class="fas fa-pause"></i> Pause';
+            document.getElementById('waveAnimation').style.display = 'block';
+            
+            const stepTime = (60 / bpm) / 4 * 1000; // 16th notes
+            
+            stepInterval = setInterval(() => {
+                // Снимаем выделение с предыдущего шага
+                document.querySelectorAll('.step.current').forEach(step => {
+                    step.classList.remove('current');
+                });
+                
+                // Подсвечиваем текущий шаг
+                document.querySelectorAll(`.step[data-step="${currentStep}"]`).forEach(step => {
+                    step.classList.add('current');
+                    
+                    // Воспроизводим звук, если шаг активен
+                    if (step.classList.contains('active')) {
+                        playSound(step.dataset.instrument);
+                    }
+                });
+                
+                currentStep = (currentStep + 1) % 16;
+            }, stepTime);
+            
+            // Запускаем визуализацию
+            initWaveVisualizer();
+        }
+
+        function stopPlayback() {
+            isPlaying = false;
+            currentStep = 0;
+            clearInterval(stepInterval);
+            document.getElementById('playBtn').innerHTML = '<i class="fas fa-play"></i> Play';
+            document.getElementById('waveAnimation').style.display = 'none';
+            
+            // Снимаем выделение со всех шагов
+            document.querySelectorAll('.step.current').forEach(step => {
+                step.classList.remove('current');
+            });
+        }
+
+        function toggleRecord() {
+            const recordBtn = document.getElementById('recordBtn');
+            if (recordBtn.classList.contains('recording')) {
+                recordBtn.classList.remove('recording');
+                recordBtn.innerHTML = '<i class="fas fa-circle"></i> Record';
+                recordBtn.style.background = 'var(--bg-darker)';
+                alert('Запись остановлена');
+            } else {
+                recordBtn.classList.add('recording');
+                recordBtn.innerHTML = '<i class="fas fa-square"></i> Recording...';
+                recordBtn.style.background = 'var(--danger)';
+                alert('Начата запись. Нажимайте на драм-пады или клавиши для записи.');
+            }
+        }
+
+        // Функции работы со звуком
+        function playSound(instrument) {
+            if (!audioContext) return;
+            
+            try {
+                let source = audioContext.createOscillator();
+                let gainNode = audioContext.createGain();
+                
+                // Настройки для разных инструментов
+                switch(instrument) {
+                    case 'Kick':
+                        source.type = 'sine';
+                        source.frequency.setValueAtTime(150, audioContext.currentTime);
+                        source.frequency.exponentialRampToValueAtTime(0.001, audioContext.currentTime + 0.5);
+                        gainNode.gain.setValueAtTime(1, audioContext.currentTime);
+                        gainNode.gain.exponentialRampToValueAtTime(0.001, audioContext.currentTime + 0.5);
+                        break;
+                        
+                    case 'Snare':
+                        source.type = 'white';
+                        gainNode.gain.setValueAtTime(0.7, audioContext.currentTime);
+                        gainNode.gain.exponentialRampToValueAtTime(0.001, audioContext.currentTime + 0.3);
+                        break;
+                        
+                    case 'Hi-Hat':
+                        source.type = 'white';
+                        source.frequency.setValueAtTime(10000, audioContext.currentTime);
+                        gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
+                        gainNode.gain.exponentialRampToValueAtTime(0.001, audioContext.currentTime + 0.1);
+                        break;
+                        
+                    case 'Clap':
+                        source.type = 'white';
+                        gainNode.gain.setValueAtTime(0.8, audioContext.currentTime);
+                        gainNode.gain.exponentialRampToValueAtTime(0.001, audioContext.currentTime + 0.2);
+                        break;
+                        
+                    case 'Bass':
+                        source.type = 'sawtooth';
+                        source.frequency.setValueAtTime(110, audioContext.currentTime);
+                        gainNode.gain.setValueAtTime(0.5, audioContext.currentTime);
+                        gainNode.gain.exponentialRampToValueAtTime(0.001, audioContext.currentTime + 0.5);
+                        break;
+                        
+                    case 'Synth':
+                        source.type = 'square';
+                        source.frequency.setValueAtTime(440, audioContext.currentTime);
+                        gainNode.gain.setValueAtTime(0.4, audioContext.currentTime);
+                        gainNode.gain.exponentialRampToValueAtTime(0.001, audioContext.currentTime + 0.3);
+                        break;
+                        
+                    default:
+                        source.type = 'sine';
+                        source.frequency.setValueAtTime(440, audioContext.currentTime);
+                        gainNode.gain.setValueAtTime(0.5, audioContext.currentTime);
+                        gainNode.gain.exponentialRampToValueAtTime(0.001, audioContext.currentTime + 0.5);
+                }
+                
+                source.connect(gainNode);
+                gainNode.connect(window.masterGain);
+                
+                source.start();
+                source.stop(audioContext.currentTime + 1);
+                
+                console.log(`Playing: ${instrument}`);
+            } catch (e) {
+                console.error('Error playing sound:', e);
+            }
+            
+            // Визуальная обратная связь
+            const pad = document.querySelector(`.drum-pad[data-sound="${instrument}"]`);
+            if (pad) {
+                pad.classList.add('active');
+                setTimeout(() => {
+                    pad.classList.remove('active');
+                }, 100);
+            }
+        }
+
+        function playPianoNote(note) {
+            if (!audioContext) return;
+            
+            try {
+                // Преобразуем название ноты в частоту
+                const frequencies = {
+                    'C3': 130.81, 'C#3': 138.59, 'D3': 146.83, 'D#3': 155.56, 'E3': 164.81, 'F3': 174.61,
+                    'F#3': 185.00, 'G3': 196.00, 'G#3': 207.65, 'A3': 220.00, 'A#3': 233.08, 'B3': 246.94,
+                    'C4': 261.63, 'C#4': 277.18, 'D4': 293.66, 'D#4': 311.13, 'E4': 329.63, 'F4': 349.23,
+                    'F#4': 369.99, 'G4': 392.00, 'G#4': 415.30, 'A4': 440.00, 'A#4': 466.16, 'B4': 493.88,
+                    'C5': 523.25, 'C#5': 554.37, 'D5': 587.33, 'D#5': 622.25, 'E5': 659.25, 'F5': 698.46,
+                    'F#5': 739.99, 'G5': 783.99, 'G#5': 830.61, 'A5': 880.00, 'A#5': 932.33, 'B5': 987.77
+                };
+                
+                const frequency = frequencies[note];
+                if (!frequency) return;
+                
+                const source = audioContext.createOscillator();
+                const gainNode = audioContext.createGain();
+                
+                source.type = 'sine';
+                source.frequency.setValueAtTime(frequency, audioContext.currentTime);
+                
+                gainNode.gain.setValueAtTime(0.5, audioContext.currentTime);
+                gainNode.gain.exponentialRampToValueAtTime(0.001, audioContext.currentTime + 1);
+                
+                source.connect(gainNode);
+                gainNode.connect(window.masterGain);
+                
+                source.start();
+                source.stop(audioContext.currentTime + 1);
+                
+                console.log(`Playing note: ${note} (${frequency} Hz)`);
+            } catch (e) {
+                console.error('Error playing piano note:', e);
+            }
+        }
+
+        // Функции интерфейса
+        function toggleStep() {
+            this.classList.toggle('active');
+            
+            // Случайным образом устанавливаем velocity для демонстрации
+            const velocities = ['velocity-low', 'velocity-medium', 'velocity-high'];
+            velocities.forEach(v => this.classList.remove(v));
+            
+            const randomVelocity = velocities[Math.floor(Math.random() * velocities.length)];
+            this.classList.add(randomVelocity);
+        }
+
+        function switchPanel(panelName) {
+            // Скрываем все панели
+            document.querySelectorAll('.panel').forEach(panel => {
+                panel.classList.remove('active');
+            });
+            
+            // Убираем активный класс со всех пунктов меню
+            document.querySelectorAll('.menu-item').forEach(item => {
+                item.classList.remove('active');
+            });
+            
+            // Показываем выбранную панель
+            if (panelName === 'sequencer') {
+                // Секвенсор уже виден по умолчанию
+            } else {
+                document.getElementById(panelName).classList.add('active');
+            }
+            
+            // Активируем соответствующий пункт меню
+            document.querySelector(`.menu-item[data-panel="${panelName}"]`).classList.add('active');
+            
+            currentPanel = panelName;
+        }
+
+        function handleKeyPress(e) {
+            const key = e.key.toUpperCase();
+            
+            // Драм-пады
+            const pads = {
+                'Q': 'Kick',
+                'W': 'Snare',
+                'E': 'Hi-Hat',
+                'R': 'Clap',
+                'A': 'Bass',
+                'S': 'Synth',
+                'D': 'Chord',
+                'F': 'FX'
+            };
+            
+            if (pads[key]) {
+                playSound(pads[key]);
+                
+                // Визуальная обратная связь
+                const pad = document.querySelector(`.drum-pad[data-sound="${pads[key]}"]`);
+                if (pad) {
+                    pad.classList.add('active');
+                    setTimeout(() => {
+                        pad.classList.remove('active');
+                    }, 100);
+                }
+            }
+            
+            // Управление транспортом
+            if (key === ' ') {
+                e.preventDefault();
+                togglePlay();
+            } else if (key === 'ESCAPE') {
+                stopPlayback();
+            }
+        }
+
+        // Загрузка паттерна
+        function loadPattern(pattern) {
+            alert(`Загружен паттерн: ${pattern.name}`);
+            // В реальном приложении здесь будет код для загрузки паттерна в секвенсор
+        }
+
+        // Анализатор аудио
+        function analyzeAudio(file) {
+            alert(`Анализ файла: ${file.name}\n\nВ реальном приложении здесь будет детальный анализ аудиофайла.`);
+            
+            // В реальном приложении здесь будет код для анализа аудио
+            // Для демонстрации просто показываем результаты
+            document.getElementById('analysisResults').style.display = 'block';
+            document.getElementById('bpmResult').textContent = '120';
+            document.getElementById('keyResult').textContent = 'C minor';
+            document.getElementById('volumeResult').textContent = '-6.2 dB';
+            document.getElementById('durationResult').textContent = '3:45';
+            
+            // Визуализация волны
+            const canvas = document.getElementById('analyzerCanvas');
+            const ctx = canvas.getContext('2d');
+            
+            function resizeCanvas() {
+                canvas.width = canvas.offsetWidth;
+                canvas.height = canvas.offsetHeight;
+            }
+            
+            resizeCanvas();
+            
+            // Рисуем пример визуализации
+            ctx.fillStyle = 'var(--bg-darker)';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            
+            ctx.fillStyle = 'var(--primary)';
+            const width = canvas.width;
+            const height = canvas.height;
+            const centerY = height / 2;
+            
+            ctx.beginPath();
+            ctx.moveTo(0, centerY);
+            
+            for (let x = 0; x < width; x++) {
+                const y = centerY + Math.sin(x / 20) * Math.cos(x / 10) * (height / 3);
+                ctx.lineTo(x, y);
+            }
+            
+            ctx.strokeStyle = 'var(--primary)';
+            ctx.lineWidth = 2;
+            ctx.stroke();
+        }
+
+        // Freshtunes функции
+        function loginToFreshtunes(email) {
+            // В реальном приложении здесь будет код для входа в аккаунт
+            // Для демонстрации просто имитируем успешный вход
+            isLoggedIn = true;
+            document.getElementById('freshtunesLogin').style.display = 'none';
+            document.getElementById('freshtunesDashboard').style.display = 'block';
+            
+            // Заполняем данные пользователя
+            document.getElementById('userName').textContent = email.split('@')[0];
+            document.getElementById('userEmail').textContent = email;
+            document.getElementById('userAvatar').textContent = email[0].toUpperCase();
+            
+            alert('Успешный вход в аккаунт Freshtunes!');
+        }
+
+        function logoutFromFreshtunes() {
+            isLoggedIn = false;
+            document.getElementById('freshtunesLogin').style.display = 'block';
+            document.getElementById('freshtunesDashboard').style.display = 'none';
+            alert('Вы вышли из аккаунта Freshtunes');
+        }
+
+        function submitTrackToFreshtunes() {
+            const title = document.getElementById('trackTitle').value;
+            const artist = document.getElementById('trackArtist').value;
+            const genre = document.getElementById('trackGenre').value;
+            const file = document.getElementById('trackFile').files[0];
+            
+            if (!title || !artist || !file) {
+                alert('Пожалуйста, заполните все поля и выберите файл');
+                return;
+            }
+            
+            alert(`Трек "${title}" отправлен на модерацию!\n\nВ реальном приложении трек будет загружен на платформу Freshtunes для распределения на все музыкальные площадки.`);
+            
+            // Очищаем форму
+            document.getElementById('trackTitle').value = '';
+            document.getElementById('trackArtist').value = '';
+            document.getElementById('trackFile').value = '';
+        }
+
+        // Переключение темы
+        function toggleTheme() {
+            const body = document.body;
+            const themeIcon = document.querySelector('#themeToggle i');
+            
+            if (currentTheme === 'dark') {
+                body.classList.add('light-theme');
+                themeIcon.className = 'fas fa-sun';
+                currentTheme = 'light';
+            } else {
+                body.classList.remove('light-theme');
+                themeIcon.className = 'fas fa-moon';
+                currentTheme = 'dark';
+            }
+        }
+
+        // Функции проекта
+        function createNewProject() {
+            projectData = {
+                name: 'Untitled Project',
+                bpm: 120,
+                patterns: {},
+                samples: {},
+                mixer: {}
+            };
+            
+            // Сброс секвенсора
+            document.querySelectorAll('.step').forEach(step => {
+                step.classList.remove('active');
+            });
+            
+            // Сброс BPM
+            bpm = 120;
+            document.getElementById('bpmValue').textContent = bpm;
+            document.getElementById('bpmSlider').value = bpm;
+            
+            console.log('New project created');
+        }
+
+        function saveProject() {
+            // Собираем данные проекта
+            const steps = {};
+            document.querySelectorAll('.step-row').forEach(row => {
+                const instrument = row.querySelector('.step-label').textContent.trim();
+                const activeSteps = [];
+                
+                row.querySelectorAll('.step').forEach((step, index) => {
+                    if (step.classList.contains('active')) {
+                        activeSteps.push(index);
+                    }
+                });
+                
+                steps[instrument] = activeSteps;
+            });
+            
+            projectData.patterns = steps;
+            projectData.bpm = bpm;
+            
+            // Сохраняем в localStorage
+            localStorage.setItem('beatforge-project', JSON.stringify(projectData));
+            
+            // Создаем файл для скачивания
+            const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(projectData));
+            const downloadAnchorNode = document.createElement('a');
+            downloadAnchorNode.setAttribute("href", dataStr);
+            downloadAnchorNode.setAttribute("download", `${projectData.name}.bfproj`);
+            document.body.appendChild(downloadAnchorNode);
+            downloadAnchorNode.click();
+            downloadAnchorNode.remove();
+            
+            alert(`Проект "${projectData.name}" сохранен!`);
+        }
+
+        function exportProject(format) {
+            switch(format) {
+                case 'wav':
+                    alert('Экспорт в WAV начат... В реальном приложении здесь будет код для рендеринга аудио.');
+                    // В реальном приложении здесь будет код для рендеринга аудио в WAV
+                    break;
+                    
+                case 'mp3':
+                    alert('Экспорт в MP3 начат... В реальном приложении здесь будет код для рендеринга аудио.');
+                    // В реальном приложении здесь будет код для рендеринга аудио в MP3
+                    break;
+                    
+                case 'midi':
+                    alert('Экспорт в MIDI начат... В реальном приложении здесь будет код для создания MIDI файла.');
+                    // В реальном приложении здесь будет код для создания MIDI файла
+                    break;
+                    
+                case 'project':
+                    saveProject();
+                    break;
+            }
+        }
+
+        // Вспомогательные функции
+        function getRandomColor() {
+            const colors = ['#ff7b00', '#4caf50', '#2196f3', '#9c27b0', '#ff9800', '#f44336'];
+            return colors[Math.floor(Math.random() * colors.length)];
+        }
+    </script>
+</body>
+</html>
